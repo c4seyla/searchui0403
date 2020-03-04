@@ -62,94 +62,124 @@ function renderItem(res, triggerClickAnalytics) {
 const { ResultCardsWrapper } = ReactiveList;
 
 class App extends Component {
-  render() {
-    return (
-        <ReactiveBase
-                app="fcaindex"
-                credentials="null"
-                url="http://192.168.15.57:9200"
-                analytics={true}
-                searchStateHeader
-        >
-                <Row gutter={16} style={{ padding: 20 }}>
-                        <Col span={12}>
-                                <Card>
-                                <MultiList
-                                  componentId="list-3"
-                                  dataField="meta.raw.Author.keyword"
-                                  size={100}
-                                  style={{
-                                    marginBottom: 20
-                                  }}
-                                  title="Author"
-                                />
-                                <MultiList
-                                  componentId="list-2"
-                                  dataField="file.extension.keyword"
-                                  size={100}
-                                  style={{
-                                    marginBottom: 20
-                                  }}
-                                  title="Type"
-                                />
-                                </Card>
-                        </Col>
-                        <Col span={12}>
-                                <DataSearch
-                                  componentId="search"
-                                  dataField={[
-                                    'file.filename',
-                                    'file.filename.keyword',
-                                    'content',
-                                    'content.keyword',
-                                    'meta.author',
-                                    'meta.author.keyword'
-                                  ]}
-                                  fieldWeights={[
-                                    1,
-                                    1,
-                                    1,
-                                    1,
-                                    1,
-                                    1
-                                  ]}
-                                  fuzziness={"AUTO"}
-                                  highlight={true}
-                                  highlightField={[
-                                    'file.filename',
-                                    'content',
-                                    'meta.author'
-                                  ]}
-                                  style={{
-                                    marginBottom: 20
-                                  }}
-                                />
+   constructor(props) {
+        super(props);
 
-                                <SelectedFilters />
-                                <div id="result">
-                                        <ReactiveList
-                                  componentId="result"
-                                  dataField="_score"
-                                  pagination={true}
-                                  react={{
-                                    and: [
-                                      'search',
-                                      'list-3',
-                                      'list-2'
-                                    ]
-                                  }}
-                                  renderItem={renderItem}
-                                  size={10}
-                                  style={{
-                                    marginTop: 20
-                                  }}
-                                />
-                                </div>
-                        </Col>
+        this.state = {
+                user: {},
+                users: []
+        };
+    }
+    componentDidMount() {
+        this.setState({ 
+            user: JSON.parse(localStorage.getItem('user')),
+            users: { loading: true }
+        });
 
-                </Row>
-        </ReactiveBase>
-    );
+        if(JSON.parse(localStorage.getItem('user')) == null){
+                window.location.replace("http://192.168.15.57:8081/login")
+        }
+        // userService.getAll().then(users => this.setState({ users }));
+    }
+
+
+    render() {
+        const { user, users } = this.state;
+        return (
+                
+                <ReactiveBase
+                        app="fcaindex"
+                        credentials="null"
+                        url="http://192.168.15.57:9200"
+                        analytics={true}
+                        searchStateHeader
+                >
+                        <div className="col-md-6 col-md-offset-3">
+                                <h1>Hi {user.firstName}!</h1>
+                                <p>You're logged in with React & Basic HTTP Authentication!!</p>
+                                <p>
+                                <Link to="/login">Logout</Link>
+                                </p>
+                        </div>
+                        <Row gutter={16} style={{ padding: 20 }}>
+                                <Col span={12}>
+                                        <Card>
+                                        <MultiList
+                                        componentId="list-3"
+                                        dataField="meta.raw.Author.keyword"
+                                        size={100}
+                                        style={{
+                                        marginBottom: 20
+                                        }}
+                                        title="Author"
+                                        />
+                                        <MultiList
+                                        componentId="list-2"
+                                        dataField="file.extension.keyword"
+                                        size={100}
+                                        style={{
+                                        marginBottom: 20
+                                        }}
+                                        title="Type"
+                                        />
+                                        </Card>
+                                </Col>
+                                <Col span={12}>
+                                        <DataSearch
+                                        componentId="search"
+                                        dataField={[
+                                        'file.filename',
+                                        'file.filename.keyword',
+                                        'content',
+                                        'content.keyword',
+                                        'meta.author',
+                                        'meta.author.keyword'
+                                        ]}
+                                        fieldWeights={[
+                                        1,
+                                        1,
+                                        1,
+                                        1,
+                                        1,
+                                        1
+                                        ]}
+                                        fuzziness={"AUTO"}
+                                        highlight={true}
+                                        highlightField={[
+                                        'file.filename',
+                                        'content',
+                                        'meta.author'
+                                        ]}
+                                        style={{
+                                        marginBottom: 20
+                                        }}
+                                        />
+
+                                        <SelectedFilters />
+                                        <div id="result">
+                                                <ReactiveList
+                                        componentId="result"
+                                        dataField="_score"
+                                        pagination={true}
+                                        react={{
+                                        and: [
+                                        'search',
+                                        'list-3',
+                                        'list-2'
+                                        ]
+                                        }}
+                                        renderItem={renderItem}
+                                        size={10}
+                                        style={{
+                                        marginTop: 20
+                                        }}
+                                        />
+                                        </div>
+                                </Col>
+
+                        </Row>
+                </ReactiveBase>
+        );
   }
 }
 
